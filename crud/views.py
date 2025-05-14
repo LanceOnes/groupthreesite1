@@ -5,6 +5,26 @@ from .models import Genders, Users
 from django.contrib.auth.hashers import make_password
 
 # Create your views here.
+def login_view(request):
+    try:
+        if request.method == 'POST':
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+
+            try:
+                user = Users.objects.get(email=email)
+                if check_password(password, user.password): # type: ignore
+                    request.session['user_id'] = user.user_id
+                    return redirect('/user/list')
+                else:
+                    return render(request, 'layout/LogIn.html', {'error': 'Invalid password'})
+            except Users.DoesNotExist:
+                messages.warning(request, 'User does not exist.')
+                return render(request, 'layout/LogIn.html', {'error': 'User not found'})
+
+        return render(request, 'layout/LogIn.html')
+    except Exception as e:
+        return HttpResponse(f'Error occurred during login: {e}')
 
 def gender_list(request):
     try:    
@@ -229,3 +249,4 @@ def edit_user(request, userId):
     except Exception as e:
         messages.error(request, f'Error occurred during edit: {e}')
         return redirect('/user/list/')
+
