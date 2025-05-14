@@ -78,7 +78,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOSt': '127.0.0.1', 
-        'NAME': 'delosreyes_db',
+        'NAME': 'groupthreesite_db',
         'PORT': '3308',
         'USER': 'root',
         'PASSWORD': '',

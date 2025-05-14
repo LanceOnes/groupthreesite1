@@ -1,0 +1,54 @@
+{% extends "layout/base.html" %}
+
+{% block 'title' %}
+Users List
+{% endblock 'title' %}
+
+{% block 'content' %} 
+
+{% include "include/sidebar.html" %}
+{% include "include/ToastMessage.html" %}
+
+<div class="pt-20 sm:ml-64 px-4">
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table class="w-full text-sm text-left text-gray-700 dark:text-gray-400 bg-white dark:bg-gray-800">
+        <thead class="text-xs uppercase bg-gray-700 text-white">
+          <tr>
+            <th class="px-6 py-3">Full Name</th>
+            <th class="px-6 py-3">Gender</th>
+            <th class="px-6 py-3">Brith Date</th>
+            <th class="px-6 py-3">Address</th>
+            <th class="px-6 py-3">Contact Number</th>
+            <th class="px-6 py-3">Email</th>
+            <th class="px-6 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-gray-900 dark:text-gray-300">
+          {% for user in users %}
+          <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <td class="px-6 py-4">{{ user.full_name }}</td>
+            <td class="px-6 py-4">{{ user.gender.gender }}</td>
+            <td class="px-6 py-4">{{ user.birth_date }}</td>
+            <td class="px-6 py-4">{{ user.address }}</td>
+            <td class="px-6 py-4">{{ user.contact_number }}</td>
+            <td class="px-6 py-4">{{ user.email }}</td>
+            <td class="px-6 py-4">
+              <div class="inline-flex shadow-sm">
+                <a href="#" class=" px-3 py-2.5 font-medium text-sm text-blue-600 hover:underline dark:text-blue-400 hover:outline-none">Edit</a>
+                <a href="#" class=" px-3 py-2.5 font-medium text-sm text-red-600 hover:underline dark:text-red-400 hover:outline-none">Delete</a>
+            </div>
+
+           </tr>
+
+          {% empty %}
+          <tr>
+            <td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No genders available.</td>
+          </tr>
+          {% endfor %}
+    
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+{%endblock 'content' %} 
