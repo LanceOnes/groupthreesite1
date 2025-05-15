@@ -1,8 +1,8 @@
 {% extends "layout/base.html" %}
 
-{% block title %} Edit User {% endblock title %}
+{% block 'title' %} Edit User {% endblock 'title' %}
 
-{% block content %}
+{% block 'content' %}
 
 {% include "include/sidebar.html" %}
 {% include "include/ToastMessage.html" %}
@@ -12,7 +12,7 @@
         <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50">
             <p class="text-2xl text-gray-400">Edit User</p>
         </div>
-        <form method="POST" class="col-span-2">
+        <form action="/user/edit/{{ user.user_id }}" method="post">
             {% csrf_token %}
             <div class="max-w-md mx-auto space-y-4">
                 <div class="flex flex-col">
@@ -60,11 +60,11 @@
         </form>
         <div class="flex items-center justify-center mt-8 mb-4">
             <div class="flex gap-4">
-                <button type="submit" form="edit-form" class="bg-blue-600 px-6 py-2.5 font-medium text-white rounded-sm hover:bg-blue-700 hover:outline-none">Save Changes</button>
+                <button type="submit" form="edit-form" class="bg-blue-600 px-6 py-2..5 font-medium text-white rounded-sm hover:bg-blue-700 hover:outline-none">Save Changes</button>
                 <a href="/user/list" class="bg-gray-600 px-6 py-2.5 font-medium text-white rounded-sm hover:bg-gray-700 hover:outline-none">Cancel</a>
             </div>
         </div>
     </div>
 </div>
 
-{% endblock content %} 
+{% endblock 'content' %} 
