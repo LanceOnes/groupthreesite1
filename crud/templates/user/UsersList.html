@@ -1,4 +1,4 @@
-66{% extends "layout/base.html" %}
+{% extends "layout/base.html" %}
 
 {% block 'title' %}
 Users List
@@ -10,6 +10,26 @@ Users List
 {% include "include/ToastMessage.html" %}
 
 <div class="pt-20 sm:ml-64 px-4">
+  <form method="get" class="mb-4">
+    <label for="search" class="sr-only">Search</label>
+    <div class="relative">
+      <input 
+        type="text" 
+        name="search" 
+        id="search"
+        placeholder="Search by name, email, or username"
+        value="{{ search_query }}"
+        class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+      >
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <!-- Search icon -->
+        <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 104 4H8zM2 8a6 6 0 1111.196 3.03l4.387 4.388a1 1 0 01-1.414 1.414l-4.388-4.387A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+  </form>
+
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table class="w-full text-sm text-left text-gray-700 dark:text-gray-400 bg-white dark:bg-gray-800">
         <thead class="text-xs uppercase bg-gray-700 text-white">
@@ -24,7 +44,7 @@ Users List
           </tr>
         </thead>
         <tbody class="text-sm text-gray-900 dark:text-gray-300">
-          {% for user in users %}
+          {% for user in page_obj %}
           <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
             <td class="px-6 py-4">{{ user.full_name }}</td>
             <td class="px-6 py-4">{{ user.gender.gender }}</td>
@@ -48,7 +68,59 @@ Users List
     
         </tbody>
       </table>
-    </div>
-  </div>
+
+      <nav aria-label="Page navigation" class="flex justify-center mt-4">
+        <ul class="inline-flex -space-x-px text-sm">
+          {% if page_obj.has_previous %}
+            <li>
+              <a href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}"
+                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                Previous
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <span
+                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-300 bg-white border border-e-0 border-gray-200 rounded-s-lg cursor-not-allowed">
+                Previous
+              </span>
+            </li>
+          {% endif %}
+      
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li>
+                <span aria-current="page"
+                      class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700">
+                  {{ num }}
+                </span>
+              </li>
+            {% else %}
+              <li>
+                <a href="?page={{ num }}&search={{ search_query }}"
+                   class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                  {{ num }}
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+      
+          {% if page_obj.has_next %}
+            <li>
+              <a href="?page={{ page_obj.next_page_number }}&search={{ search_query }}"
+                 class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                Next
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <span
+                class="flex items-center justify-center px-3 h-8 leading-tight text-gray-300 bg-white border border-gray-200 rounded-e-lg cursor-not-allowed">
+                Next
+              </span>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
   
 {%endblock 'content' %} 

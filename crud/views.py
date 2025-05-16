@@ -1,8 +1,11 @@
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Genders, Users
 from django.contrib.auth.hashers import make_password
+
 
 # Create your views here.
 def login_view(request):
@@ -100,16 +103,25 @@ def delete_gender(request, genderId):
         return HttpResponse(f'Error occured during edit gender: {e}')
     
 def user_list(request):
-      try:
-         userObj = Users.objects.select_related('gender')
+    search_query = request.GET.get('search', '')
 
-         data = {
-            'users': userObj
-         }
+    user_queryset = Users.objects.select_related('gender').filter(
+        Q(full_name__icontains=search_query) |
+        Q(email__icontains=search_query) |
+        Q(username__icontains=search_query)
+    ).order_by('user_id')
 
-         return render(request, 'user/UsersList.html', data)
-      except Exception as e:
-         return HttpResponse(f'Error occurred during user list retrieval: {e}')
+    paginator = Paginator(user_queryset, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'search_query': search_query,
+    }
+
+    return render(request, 'user/UsersList.html', context)
+
     
 def add_user(request):
    try:
@@ -150,57 +162,6 @@ def add_user(request):
     return render(request, 'user/AddUser.html', data)
    except Exception as e:
     return HttpResponse(f'Error occured during add user: {e}')
-   
-
-
-def edit_user(request, userId):
-    try:
-        userObj = Users.objects.get(pk=userId)
-        
-        if request.method == 'POST':
-            full_name = request.POST.get('full_name')
-            gender = request.POST.get('gender')
-            birth_date = request.POST.get('birth_date')
-            address = request.POST.get('address')
-            contact_number = request.POST.get('contact_number')
-            email = request.POST.get('email')
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            confirm_password = request.POST.get('confirm_password')
-            
-            if not all([full_name, gender, birth_date, address, contact_number, username]):
-                messages.error(request, 'All fields are required!')
-                return redirect(f'/user/edit/{userId}/')
-            
-            if password and confirm_password:
-                if password != confirm_password:
-                    messages.error(request, 'Passwords do not match!')
-                    return redirect(f'/user/edit/{userId}/')
-                userObj.password = make_password(password)
-            
-            userObj.full_name = full_name
-            userObj.gender = Genders.objects.get(pk=gender)
-            userObj.birth_date = birth_date
-            userObj.address = address
-            userObj.contact_number = contact_number
-            userObj.email = email
-            userObj.username = username
-            userObj.save()
-            
-            messages.success(request, 'User updated successfully!')
-            return redirect('/user/list/')
-            
-        data = {
-            'user': userObj,
-            'gender': Genders.objects.all()
-        }
-        
-        return render(request, 'user/EditUser.html', data)
-    
-    except Exception as e:
-        messages.error(request, f'Error occurred during edit: {e}')
-        return redirect('/user/list/')
-    
 
 def edit_user(request, userId):
     try:
