@@ -10,7 +10,7 @@
 <div class="p-2 sm:ml-64 mt-16 md:mt-14">
     <div class="p-4 border-2 border-gray-200 rounded-lg">
         <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50">
-            <p class="text-2xl text-gray-400">Edit User</p>
+            <p class="text-2xl text-gray-400">Edit User</p> 
         </div>
         <form action="/user/edit/{{ user.user_id }}" method="post">
             {% csrf_token %}
@@ -57,12 +57,10 @@
                     <input type="password" name="confirm_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Leave blank to keep current password">
                 </div>
             </div>
+            <div class="flex items-center justify-center mt-8 mb-4">
+                <a href="/user/list" class="bg-white hover:bg-gray-300 text-sm font-medium text-black px-4 py-2.5 rounded-sm shadow-sm cursor-pointer mr-2">Back</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-sm font-medium text-white px-4 py-2.5 rounded-sm shadow-sm cursor-pointer">Save User</button>
         </form>
-        <div class="flex items-center justify-center mt-8 mb-4">
-            <div class="flex gap-4">
-                <button type="submit" form="edit-form" class="bg-blue-600 px-6 py-2..5 font-medium text-white rounded-sm hover:bg-blue-700 hover:outline-none">Save Changes</button>
-                <a href="/user/list" class="bg-gray-600 px-6 py-2.5 font-medium text-white rounded-sm hover:bg-gray-700 hover:outline-none">Cancel</a>
-            </div>
         </div>
     </div>
 </div>

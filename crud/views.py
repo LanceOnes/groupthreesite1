@@ -151,7 +151,7 @@ def add_user(request):
         ).save()
 
         messages.success(request, 'User added successfully!')
-        return redirect('/user/add')
+        return redirect('/user/list/')
     
     else:
       genderObj = Genders.objects.all()
@@ -210,4 +210,23 @@ def edit_user(request, userId):
     except Exception as e:
         messages.error(request, f'Error occurred during edit: {e}')
         return redirect('/user/list/')
+    
+def delete_user(request, userId):
+    try:
+        if request.method == 'POST':
+            userObj = Users.objects.get(pk=userId)
+            userObj.delete()
+
+            messages.success(request, 'User deleted successfully!')
+            return redirect('/user/list/')
+        else:
+            userObj = Users.objects.get(pk=userId)
+
+            data = {
+                'user': userObj
+            }
+
+            return render(request, 'user/DeleteUser.html', data)
+    except Exception as e:
+        return HttpResponse(f'Error occured during delete user: {e}')
 
