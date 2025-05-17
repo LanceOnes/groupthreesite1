@@ -6,6 +6,7 @@
        <div class="flex items-center justify-start rtl:justify-end">
          <!-- Sidebar toggle -->
          <button 
+            id="mobile-menu-button"
            type="button"
            data-drawer-target="logo-sidebar"
            data-drawer-toggle="logo-sidebar"
@@ -60,8 +61,8 @@
  </nav>
  
  <!-- Sidebar -->
- <aside class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-gray-800" aria-label="Sidebar">
-   <ul class="space-y-2 font-medium">
+ <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-gray-800 transition-transform transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+  <ul class="space-y-2 font-medium">
      <li>
        <a href="/gender/list" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 group">
          <span class="ms-3">Gender List</span>
@@ -85,3 +86,5 @@
    </ul>
  </aside>
  
+ <div id="sidebar-overlay" class="fixed inset-0 bg-opacity-50 hidden z-30 sm:hidden"></div>
+  <!-- End of Sidebar -->
