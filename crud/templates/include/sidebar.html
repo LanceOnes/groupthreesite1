@@ -26,20 +26,17 @@
          </a>
        </div>
  
-       <!-- Right side -->
-       <div class="flex items-center">
-         <div class="relative flex items-center ml-3">
-           <!-- User Menu Button -->
-           <button 
-             type="button" 
-             class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" 
-             aria-expanded="false" 
-             data-dropdown-toggle="dropdown-user"
-             aria-haspopup="true"
-           >
-             <span class="sr-only">Open user menu</span>
-             <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="User photo" />
-           </button>
+          <!-- Right side -->
+          <div class="flex items-center">
+            <div class="relative flex items-center ml-3">
+              <!-- User Menu Button -->
+              <a class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" log
+              >
+                <span class="sr-only">Log out</span>
+                <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="User photo" />
+              </a>
+            </div>
+          </div>
  
            <!-- Dropdown Menu -->
            <div id="dropdown-user" class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600">
@@ -83,6 +80,11 @@
          <span class="flex-1 ms-3 whitespace-nowrap">Add User</span>
        </a>
      </li>
+     <li>
+      <a href="{% url 'logout' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-red-500 hover:bg-gray-200 dark:hover:bg-gray-700 group">
+        <span class="flex-1 ms-3 whitespace-nowrap">Log Out</span>
+      </a>
+    </li>
    </ul>
  </aside>
  

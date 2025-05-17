@@ -1,34 +1,38 @@
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import Genders, Users
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
+from .utils import login_required_custom
+from django.contrib.auth import logout
+from django.urls import reverse
+from django.core.paginator import Paginator
 
 
 # Create your views here.
 def login_view(request):
-    try:
-        if request.method == 'POST':
-            email = request.POST.get('email')
-            password = request.POST.get('password')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-            try:
-                user = Users.objects.get(email=email)
-                if check_password(password, user.password): # type: ignore
-                    request.session['user_id'] = user.user_id
-                    return redirect('/user/list')
-                else:
-                    return render(request, 'layout/LogIn.html', {'error': 'Invalid password'})
-            except Users.DoesNotExist:
-                messages.warning(request, 'User does not exist.')
-                return render(request, 'layout/LogIn.html', {'error': 'User not found'})
+        try:
+            user = Users.objects.get(email=email)
+            if check_password(password, user.password):  # Alternatively, use authenticate
+                request.session['user_id'] = user.user_id  # Set user_id in session
+                messages.success(request, 'Login successful!')
+                return redirect('/user/list')  # Redirect to user list
+            else:
+                messages.error(request, 'Invalid password')
+        except Users.DoesNotExist:
+            messages.error(request, 'User does not exist')
+        except Exception as e:
+            messages.error(request, f'Error occurred during login: {e}')
 
-        return render(request, 'layout/LogIn.html')
-    except Exception as e:
-        return HttpResponse(f'Error occurred during login: {e}')
+    return render(request, 'layout/login.html')
 
+@login_required_custom
 def gender_list(request):
     try:    
         genders = Genders.objects.all() #Select * FROM tbl_genders
@@ -41,6 +45,7 @@ def gender_list(request):
     except Exception as e:
         return HttpResponse(f'Error occured during load genders: {e}')
 
+@login_required_custom
 def add_gender(request): 
     try:
         if request.method == 'POST':
@@ -101,7 +106,8 @@ def delete_gender(request, genderId):
  
     except Exception as e:
         return HttpResponse(f'Error occured during edit gender: {e}')
-    
+
+@login_required_custom
 def user_list(request):
     search_query = request.GET.get('search', '')
 
@@ -122,7 +128,7 @@ def user_list(request):
 
     return render(request, 'user/UsersList.html', context)
 
-    
+@login_required_custom    
 def add_user(request):
    try:
 
@@ -137,6 +143,13 @@ def add_user(request):
         password = request.POST.get('password')
         confirmPassword = request.POST.get('confirm_password')
 
+        if not all([fullName, gender, birth_date, address, contactNumber, email, username, password, confirmPassword]):
+                messages.error(request, 'All fields are required!')
+                return redirect('/user/add')
+
+        if password != confirmPassword:
+                messages.error(request, 'Passwords do not match!')
+                return redirect('/user/add')
         
         Users.objects.create(
             full_name=fullName,
@@ -152,7 +165,6 @@ def add_user(request):
 
         messages.success(request, 'User added successfully!')
         return redirect('/user/list/')
-    
     else:
       genderObj = Genders.objects.all()
 
@@ -161,7 +173,8 @@ def add_user(request):
     }
     return render(request, 'user/AddUser.html', data)
    except Exception as e:
-    return HttpResponse(f'Error occured during add user: {e}')
+    messages.error(request, f'Error occurred during add user: {e}')
+    return redirect('/user/add')
 
 def edit_user(request, userId):
     try:
@@ -180,12 +193,12 @@ def edit_user(request, userId):
             
             if not all([full_name, gender, birth_date, address, contact_number, username]):
                 messages.error(request, 'All fields are required!')
-                return redirect(f'/user/edit/{userId}/')
+                return redirect(f'/user/edit/{userId}')
             
             if password and confirm_password:
                 if password != confirm_password:
                     messages.error(request, 'Passwords do not match!')
-                    return redirect(f'/user/edit/{userId}/')
+                    return redirect(f'/user/edit/{userId}')
                 userObj.password = make_password(password)
             
             userObj.full_name = full_name
@@ -229,4 +242,73 @@ def delete_user(request, userId):
             return render(request, 'user/DeleteUser.html', data)
     except Exception as e:
         return HttpResponse(f'Error occured during delete user: {e}')
+
+def logout_view(request):
+    logout(request)
+    return redirect(reverse('login'))
+
+def change_password(request, userId):
+    userObj = get_object_or_404(Users, pk=userId)
+
+    if request.method == 'POST':
+        form = change_password(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            userObj.password = make_password(new_password)
+            userObj.save()
+
+            messages.success(request, 'Password changed successfully!')
+            return redirect('/user/list') 
+    else:
+        form =  change_password()
+
+    context = {
+        'user': userObj,
+        'form': form,
+    }
+    return render(request, 'user/changepassword.html', context)
+
+def signup_view(request):
+   try:
+
+    if request.method == 'POST':   
+        fullName = request.POST.get('full_Name')
+        gender = request.POST.get('gender')
+        birth_date = request.POST.get('birth_date')
+        address = request.POST.get('address')
+        contactNumber = request.POST.get('contact_number')
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirmPassword = request.POST.get('confirm_password')
+
+        
+        Users.objects.create(
+            full_name=fullName,
+            gender=Genders.objects.get(pk=gender),
+            birth_date=birth_date,
+            address=address,  
+            contact_number=contactNumber,
+            email=email,
+            username=username,
+            password=make_password(password)
+
+        ).save()
+
+        messages.success(request, 'User added successfully!')
+        return redirect('login')
+    
+    else:
+      genderObj = Genders.objects.all()
+
+    data = {
+       'genders': genderObj
+    }
+    return render(request, 'layout/Signup.html', data)
+   except Exception as e:
+    return HttpResponse(f'Error occured during add user: {e}')
+
+
+
+
 

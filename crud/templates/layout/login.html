@@ -1,35 +1,67 @@
-{% load static%}
-<!DOCTYPE html>
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex justify-center items-center h-screen">
-    <form method="post" class="bg-white p-8 rounded shadow-md w-full max-w-sm">
+<body class="bg-gray-300 flex justify-center items-center min-h-screen">
+
+    <form method="post" action="{% url 'login' %}" class="bg-white p-6 sm:p-8 rounded shadow-md w-11/12 sm:w-full max-w-sm">
         {% csrf_token %}
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="text-sm px-3 py-2 rounded
+                    {% if message.tags == 'error' %}
+                        text-red-600 bg-red-100 border border-red-300
+                    {% elif message.tags == 'success' %}
+                        text-green-600 bg-green-100 border border-green-300
+                    {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="mb-5">
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-            <input type="email" id="email" name="username" placeholder="name@example.com"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+            <input type="email" id="email" name="email" placeholder="name@example.com"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500"
                 required />
         </div>
         <div class="mb-5">
             <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Your password</label>
             <input type="password" id="password" name="password"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                autocomplete="off"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500"
                 required />
         </div>
-        <div class="flex items-center mb-5">
-            <input id="remember" type="checkbox"
-                class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300" />
-            <label for="remember" class="ms-2 text-sm font-medium text-gray-900">Remember me</label>
+
+        <div class="mb-5 flex items-center">
+            <input type="checkbox" id="show-password" class="mr-2">
+            <label for="show-password" class="text-sm text-gray-700">Show password</label>
         </div>
-        <button type="submit"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center">
-            Login
-        </button>
+        
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center sm:text-base md:text-lg">Log In</button>
+
+        <p class="text-sm font-light text-gray-900 dark:text-gray-900 mt-4 text-center sm:text-base">
+            Don't have an account yet? <a href="{% url 'signup' %}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+        </p>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("show-password");
+            const passwordField = document.getElementById("password");
+
+            checkbox.addEventListener("change", function () {
+                passwordField.type = this.checked ? "text" : "password";
+            });
+        });
+    </script>
 </body>
 </html>
