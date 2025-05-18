@@ -13,6 +13,7 @@ urlpatterns = [
     path('user/delete/<int:userId>', views.delete_user),
     
     path('user/change_password/<int:userId>', views.change_password),
+    path('user/password/<int:userId>/', views.password, name='password'),
     
    path('logout/', views.logout_view, name='logout'),
     path('login/', views.login_view, name='login'),  # Default login route
